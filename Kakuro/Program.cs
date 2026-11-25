@@ -19,15 +19,10 @@ for (int y = 0; y < grid.Dimensions; y++)
 
 return 0;
 
-class GridConvertResult
+class GridConvertResult(IReadOnlyCollection<string> problems)
 {
     public bool IsSuccess => Problems.Count == 0;
-    public ICollection<string> Problems { get; init; } = [];
-
-    public void AddProblem(int lineNumber, string problem)
-    {
-        Problems.Add($"Line {lineNumber}: {problem}");
-    }
+    public IReadOnlyCollection<string> Problems { get; init; } = problems;
 }
 
 class GridConverter
@@ -39,13 +34,13 @@ class GridConverter
     {
         grid = default!;
 
-        GridConvertResult result = new();
+        List<string> problems = [];
 
         string content = File.ReadAllText(path);
         string[] lines = content.Split(Environment.NewLine);
 
         if (!int.TryParse(lines[0], out int dimensions) && dimensions >= MinDimensions)
-            result.AddProblem(1, $"The first line doesn't contain an integer for the dimensions of at least {MinDimensions}.");
+            problems.Add(Problem(1, $"The first line doesn't contain an integer for the dimensions of at least {MinDimensions}."));
 
         grid = new(Math.Max(dimensions, MinDimensions));
 
@@ -58,7 +53,7 @@ class GridConverter
             string[] parts = line.Split(',');
             if (parts.Length != PartsPerLine)
             {
-                result.AddProblem(lineNumber, "Does not contain exactly 4 numbers for y, x, downSum, rightSum.");
+                problems.Add(Problem(lineNumber, "Does not contain exactly 4 numbers for y, x, downSum, rightSum."));
                 continue;
             }
 
@@ -68,7 +63,7 @@ class GridConverter
 
                 if (!int.TryParse(parts[j], out var parsed))
                 {
-                    result.AddProblem(lineNumber, $"Part {partNumber} is not a valid integer.");
+                    problems.Add(Problem(lineNumber, $"Part {partNumber} is not a valid integer."));
                     continue;
                 }
 
@@ -92,8 +87,11 @@ class GridConverter
             }
         }
 
-        return result;
+        return new GridConvertResult(problems);
     }
+
+    private static string Problem(int line, string message) =>
+        $"Line {line}: {message}";
 }
 
 class Grid
@@ -127,6 +125,31 @@ class SetTile(int x, int y, int rightSum, int downSum) : Tile(x, y)
 
     public bool IsEmpty { get; } = rightSum == 0 && downSum == 0;
 
+    public IEnumerable<IEnumerable<int>> GetRightCombinations(int n) =>
+        GetCombinations(RightSum, n);
+
+    public IEnumerable<IEnumerable<int>> GetDownCombinations(int n) =>
+        GetCombinations(DownSum, n);
+
+    private static IEnumerable<IEnumerable<int>> GetCombinations(int sum, int n, int min = 1)
+    {
+        if (n == 1)
+        {
+            if (sum >= min)
+                yield return new[] { sum };
+
+            yield break;
+        }
+
+        for (int i = min; i <= sum / n; i++)
+        {
+            foreach (var rest in GetCombinations(sum - i, n - 1, i + 1))
+            {
+                yield return new[] { i }.Concat(rest);
+            }
+        }
+    }
+
     public override string ToString()
     {
         return $"{DownSum,2}\\{RightSum,-2}";
@@ -139,6 +162,6 @@ class FillTile(int x, int y, int value = 0) : Tile(x, y)
 
     public override string ToString()
     {
-        return $"{Value,-5}";
+        return $"  {Value}  ";
     }
 }
