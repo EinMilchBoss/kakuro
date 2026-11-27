@@ -4,8 +4,7 @@ public static class Program
 {
     public static int Main()
     {
-        GridConverter converter = new();
-        var result = converter.ParseFromImport("test.kkr", out var grid);
+        var result = GridConverter.ParseFromImport("test.kkr", out var grid);
         if (!result.IsSuccess)
         {
             Console.Error.WriteLine("Error!");
@@ -13,16 +12,21 @@ public static class Program
             return 1;
         }
 
+        PrintGrid(grid);
+
+        return 0;
+    }
+
+    private static void PrintGrid(Grid grid)
+    {
         for (int y = 0; y < grid.Dimensions; y++)
         {
             Console.Write('|');
             for (int x = 0; x < grid.Dimensions; x++)
             {
-                Console.Write($"{grid[y, x]}|");
+                Console.Write($"{grid[y, x].Print()}|");
             }
             Console.WriteLine();
         }
-
-        return 0;
     }
 }

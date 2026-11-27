@@ -32,7 +32,7 @@ public class SetTile(int x, int y, int rightSum, int downSum) : Tile(x, y)
         }
     }
 
-    public override string ToString()
+    public override string Print()
     {
         return $"{DownSum,2}\\{RightSum,-2}";
     }
