@@ -36,7 +36,7 @@ public static class GridConverter
             for (int x = 0; x < dimensions; x++)
             {
                 if (grid[y, x] == null)
-                    grid[y, x] = new FillTile(x, y);
+                    grid[y, x] = new VarTile(x, y);
             }
         }
 
