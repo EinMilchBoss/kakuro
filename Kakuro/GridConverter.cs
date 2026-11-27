@@ -19,8 +19,7 @@ public static class GridConverter
         if (!TryParseDimension(lines[0], problems, out int dimensions))
             return new GridConversionResult(problems);
 
-        grid = new(dimensions);
-
+        List<SetTile> setTiles = [];
         for (int i = 1; i < lines.Length; i++)
         {
             if (!TryParseLine(i + 1, lines[i], problems, out int[] lineValues))
@@ -28,18 +27,10 @@ public static class GridConverter
 
             int y = lineValues[0];
             int x = lineValues[1];
-            grid[y, x] = new SetTile(x, y, lineValues[2], lineValues[3]);
+            setTiles.Add(new(x, y, lineValues[2], lineValues[3]));
         }
 
-        for (int y = 0; y < dimensions; y++)
-        {
-            for (int x = 0; x < dimensions; x++)
-            {
-                if (grid[y, x] == null)
-                    grid[y, x] = new VarTile(x, y);
-            }
-        }
-
+        grid = Grid.FromSetTiles(dimensions, setTiles);
         return new GridConversionResult(problems);
     }
 
