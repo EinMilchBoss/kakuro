@@ -131,7 +131,7 @@ class SetTile(int x, int y, int rightSum, int downSum) : Tile(x, y)
     public IEnumerable<IEnumerable<int>> GetDownCombinations(int n) =>
         GetCombinations(DownSum, n);
 
-    private static IEnumerable<IEnumerable<int>> GetCombinations(int sum, int n, int min = 1)
+    private static IEnumerable<int[]> GetCombinations(int sum, int n, int min = 1)
     {
         if (n == 1)
         {
@@ -145,7 +145,7 @@ class SetTile(int x, int y, int rightSum, int downSum) : Tile(x, y)
         {
             foreach (var rest in GetCombinations(sum - i, n - 1, i + 1))
             {
-                yield return new[] { i }.Concat(rest);
+                yield return new[] { i }.Concat(rest).ToArray();
             }
         }
     }
