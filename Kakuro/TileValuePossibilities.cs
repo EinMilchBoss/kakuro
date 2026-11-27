@@ -1,6 +1,6 @@
 namespace Kakuro;
 
-public record struct TileValuePossibilities
+public record class TileValuePossibilities
 {
     private const int MinValue = 1;
     private const int MaxValue = 9;
@@ -13,7 +13,7 @@ public record struct TileValuePossibilities
             AddValue(value);
     }
 
-    public readonly IEnumerable<int> GetValues()
+    public IEnumerable<int> GetValues()
     {
         for (int value = MinValue; value <= MaxValue; value++)
         {
@@ -22,7 +22,7 @@ public record struct TileValuePossibilities
         }
     }
 
-    public readonly bool ContainsValue(int value)
+    public bool ContainsValue(int value)
     {
         ThrowIfInvalidValue(value);
 
